@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tp1VueJS</title>
+    <!-- Ajouter lien fichier css -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        .block{
+            display:block;
+        }
+
+        table{
+            margin-top:50px;
+            text-align:center;
+
+        }
+
+        .resultat{
+            display:block;
+        }
+
+        /* Style appelé quand la case a coché est coché */
+        .ligneInscrit{
+            background-color:lightgreen;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="app">
+    <h1> Formulaire d'inscription :</h1>
+    <div class="block">
+
+        <div v-for="tab in tabs">
+
+            <input v-model="tab.nom" placeholder="nom">
+
+            <input v-model="tab.prenom" placeholder="prenom">
+
+        </div>
+
+        <input type="button" value="Ajouter une inscription" v-on:click="ajouter">
+
+        <div class="resultat">
+            <table>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>sup</th>
+                </tr>
+                <tr v-for="(tab, index) in tabs"
+                    :class="{'ligneInscrit' : tab.checked}"
+                >
+
+
+                    <td>{{tab.nom | enMajuscule }}</td>
+                    <td>{{tab.prenom | enMajuscule }}</td>
+                    <td><input type="button" value="Supprimer" v-on:click="supprimer(index)"></td>
+                    <td><input class="checkbox" type="checkbox" v-model="tab.checked"> </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                tabs: [{nom:"",prenom:"",checked: false}],
+                color: 'green'
+            },
+            mounted() {
+                if(localStorage.getItem('tabs')){
+                    try{
+                        this.tabs = JSON.parse(localStorage.getItem('tabs'))
+                    }catch (e){
+                        localStorage.removeItem('tabs')
+                    }
+                }
+            },
+            methods:{
+                ajouter: function(){
+                    this.tabs.push({nom:"",prenom:"",checked: false})
+                    this.save()
+                },
+                supprimer: function (index){
+                    this.tabs.splice(index,1)
+                    this.save()
+                },
+                save(){
+                    const parsed = JSON.stringify(this.tabs)
+                    localStorage.setItem('tabs',parsed)
+                }
+            },
+            filters:{
+                enMajuscule: function(value){
+                    if (!value){
+                        return '';
+                    }
+                    value = value.toString()
+                    return value.charAt(0).toUpperCase()+value.substring(1).toLowerCase()
+                }
+            }
+        });
+
+
+    </script>
+</body>
+</html>
